@@ -1,0 +1,4 @@
+.vscode
+.devcontainer
+poker_sdl2
+*.o
