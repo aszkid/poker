@@ -43,4 +43,5 @@ bool gfx_loop()
             SDL_UpdateWindowSurface(window);
         }
     }
+    return quit;
 }
