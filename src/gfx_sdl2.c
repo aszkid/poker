@@ -3,8 +3,8 @@
 #include "utils.h"
 #include <SDL2/SDL.h>
 
-SDL_Window* window = NULL;
-SDL_Renderer* renderer = NULL;
+SDL_Window *window = NULL;
+SDL_Renderer *renderer = NULL;
 const unsigned int SCREEN_WIDTH = 800;
 const unsigned int SCREEN_HEIGHT = 600;
 
@@ -15,18 +15,13 @@ int gfx_init()
         return GFX_ERROR;
     }
 
-    SDL_CreateWindowAndRenderer(
-        SCREEN_WIDTH,
-        SCREEN_HEIGHT,
-        SDL_WINDOW_SHOWN,
-        &window,
-        &renderer
-    );
+    SDL_CreateWindowAndRenderer(SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN,
+                                &window, &renderer);
     if (window == NULL || renderer == NULL) {
         log_error("SDL_Error: %s\n", SDL_GetError());
         return GFX_ERROR;
     }
-    
+
     return GFX_OK;
 }
 
@@ -35,8 +30,8 @@ int gfx_loop()
     SDL_Event e;
     while (SDL_PollEvent(&e) > 0) {
         switch (e.type) {
-            case SDL_QUIT:
-                return GFX_QUIT;
+        case SDL_QUIT:
+            return GFX_QUIT;
         }
     }
 

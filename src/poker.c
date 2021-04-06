@@ -22,11 +22,12 @@ int main(int argc, char **argv)
     if (gfx_init() != GFX_OK) {
         return 1;
     }
-    
+
 #ifdef EMSCRIPTEN
     emscripten_set_main_loop(main_loop, -1, 1);
 #else
-    do {} while (gfx_loop() != GFX_QUIT);
+    do {
+    } while (gfx_loop() != GFX_QUIT);
 #endif
 
     return 0;
