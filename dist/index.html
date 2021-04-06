@@ -5,6 +5,10 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     </head>
     <body>
+        <div style="margin-bottom:10px;">
+          <input type="text" value="127.0.0.1:5999" name="serverIp" id="serverIp" />
+          <button onClick="onConnect();">Connect</button>
+        </div>
         <div style="display:flex;height:600px;">
           <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
           <div style="border:1px solid gray;width:100%;padding:10px;margin:0 20px;overflow:scroll;font-weight:700;font-family:Meslo,monospace;font-size:12px;" id="output"></div>
@@ -41,5 +45,11 @@
             };
         </script>
         <script src="poker.js"></script>
+        <script type="text/javascript">
+          const onConnect = () => {
+            const remote = document.getElementById("serverIp").value;
+            Module.ccall("_net_handle_foo", "null", ["string"], [remote]);
+          };
+        </script>
     </body>
 </html>

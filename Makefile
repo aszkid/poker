@@ -1,14 +1,16 @@
 all: poker_sdl2 poker_wasm
-poker.o: src/poker.c
-	gcc $^ -c -o $@
-poker.wasm.o: src/poker.c
-	emcc -DEMSCRIPTEN $^ -c -o $@
-poker_sdl2: poker.o src/gfx_sdl2.c
+poker_sdl2: src/poker.c src/gfx_sdl2.c src/net_posix.c
 	gcc $^ -lSDL2 -o $@ 
-poker_wasm: poker.wasm.o src/gfx_sdl2.c
-	emcc -DEMSCRIPTEN $^ -s WASM=1 -s USE_SDL=2 -o dist/poker.js
+poker_wasm: src/poker.c src/gfx_sdl2.c src/net_webrtc.c
+	emcc -DEMSCRIPTEN $^ \
+		--js-library src/net_webrtc.js \
+		-s EXPORTED_FUNCTIONS='["_main","__net_handle_open","__net_handle_foo"]' \
+		-s EXPORTED_RUNTIME_METHODS='["ccall"]' \
+		-s WASM=1 \
+		-s USE_SDL=2 \
+		-o dist/poker.js
 clean:
-	rm -f poker.o poker_sdl2 dist/poker.wasm* dist/poker.js
+	rm -f poker_sdl2 dist/poker.wasm dist/poker.js
 format:
 	clang-format -i src/*.[ch]
 serve: poker_wasm

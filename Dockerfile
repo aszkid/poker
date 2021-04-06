@@ -17,4 +17,4 @@ CMD . $NVM_DIR/nvm.sh && \
     cd /emsdk && \
     . ./emsdk_env.sh && \
     cd /poker && \
-    npx nodemon -w src -w dist/index.html --ext c,h,html --exec "make all && npx serve dist"
+    npx nodemon -w src -w dist/index.html --ext c,h,html --exec "make all && npx serve dist || exit 1"

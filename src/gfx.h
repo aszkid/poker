@@ -1,4 +1,5 @@
 // Graphics subsystem
+#pragma once
 #include <stdbool.h>
 
 enum { GFX_OK, GFX_ERROR, GFX_QUIT };

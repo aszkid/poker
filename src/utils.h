@@ -1,3 +1,4 @@
+#pragma once
 #include <stdio.h>
 
 #define _log(fd, color, ...)                                                   \
