@@ -1,7 +1,7 @@
 // Graphics subsystem
 #include <stdbool.h>
 
-enum { GFX_OK, GFX_ERROR };
+enum { GFX_OK, GFX_ERROR, GFX_QUIT };
 
 int gfx_init();
-bool gfx_loop();
+int gfx_loop();
