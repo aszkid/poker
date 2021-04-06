@@ -5,16 +5,15 @@ extern void do_connect();
 
 void _net_handle_open()
 {
-    log_info("Open connection!");
+    log_debug("Open connection!");
 }
 
-void _net_handle_foo(char *foo)
+void _net_handle_close()
 {
-    log_debug("net foo: %s", foo);
-    do_connect();
+    log_debug("Close connection");
 }
 
-int alert()
+int connect()
 {
     do_connect();
 }

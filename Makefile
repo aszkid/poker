@@ -4,7 +4,7 @@ poker_sdl2: src/poker.c src/gfx_sdl2.c src/net_posix.c
 poker_wasm: src/poker.c src/gfx_sdl2.c src/net_webrtc.c
 	emcc -DEMSCRIPTEN $^ \
 		--js-library src/net_webrtc.js \
-		-s EXPORTED_FUNCTIONS='["_main","__net_handle_open","__net_handle_foo"]' \
+		-s EXPORTED_FUNCTIONS='["_main","__net_handle_open","__net_handle_close"]' \
 		-s EXPORTED_RUNTIME_METHODS='["ccall"]' \
 		-s WASM=1 \
 		-s USE_SDL=2 \

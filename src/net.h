@@ -1,3 +1,3 @@
 #pragma once
 
-int alert();
+int connect(char *address);
