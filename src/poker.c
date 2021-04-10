@@ -19,6 +19,13 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    if (net_init() != NET_OK) {
+        log_error("Failed to initialize network subsystem");
+        return 1;
+    }
+
+    net_connect("particles-dropped-ancient");
+
 #ifdef EMSCRIPTEN
     emscripten_set_main_loop(main_loop, -1, 1);
 #else

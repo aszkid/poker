@@ -2,7 +2,12 @@ const path = require("path");
 const app = require("express")();
 const http = require("http");
 const server = http.createServer(app);
-const io = require("socket.io")(server);
+const io = require("socket.io")(server, {
+    cors: {
+        origin: "http://localhost:5000",
+        methods: ["GET", "POST"]
+    }
+});
 const randomWords = require("random-words");
 
 // Mapping of server name to server info object

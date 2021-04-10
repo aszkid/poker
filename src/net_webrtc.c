@@ -1,19 +1,37 @@
 #include "net.h"
 #include "utils.h"
 
-extern void do_connect();
+// Javascript glue functions
+extern void js_init();
+extern void js_connect(const char* server_id);
 
-void _net_handle_open()
+// Javascript callbacks
+void _net_handle_message(const char* message)
 {
-    log_debug("Open connection!");
+    log_info("Received message: %s", message);
 }
 
-void _net_handle_close()
+////////////////////////////////////////////////////////
+// Implementation
+////////////////////////////////////////////////////////
+
+int net_init()
 {
-    log_debug("Close connection");
+    js_init();
+    return NET_OK;
 }
 
-int connect()
+int net_connect(const char* server_id)
 {
-    do_connect();
+    js_connect(server_id);
+}
+
+int net_recv(int fd, void (*callback)(const char*))
+{
+
+}
+
+int net_send(int fd, const char* message)
+{
+
 }
