@@ -19,3 +19,4 @@ Make sure to run `make format` before pushing your changes.
 - [WebRTC basics](https://www.html5rocks.com/en/tutorials/webrtc/basics/)
 - [serverless-webrtc](https://github.com/cjb/serverless-webrtc)
 - [WebRTC one-to-one without signaling server](https://mac-blog.org.ua/webrtc-one-to-one-without-signaling-server/)
+- [WebRTC for the curious](https://webrtcforthecurious.com/)
