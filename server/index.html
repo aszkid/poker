@@ -7,10 +7,8 @@
     <body>
         <label for="server">Server ID:</label>
         <input type="text" name="server" id="server">
-        <button>Connect</button>
-        <br/><br/>
-
-        <button onClick="createDataChannel();">Create data channel</button>
+        <button onClick="connectToServer();">Connect</button>
+        <button onClick="createServer();">Create</button>
         <br/><br/>
 
         <label for="message">Message:</label><br/>
@@ -18,19 +16,14 @@
         <button onClick="send();">Send</button>
         <br/><br/>
 
-        <label for="sdp-offer">SDP offer:</label><br/>
-        <textarea name="sdp-offer" id="sdp-offer" cols="80" rows="20"></textarea><br/>
-        <button onClick="addSdp('offer');">Add SDP</button>
-        <br/><br/>
-
-        <label for="sdp-answer">SDP answer:</label><br/>
-        <textarea name="sdp-answer" id="sdp-answer" cols="80" rows="20"></textarea><br/>
-        <button onClick="addSdp('answer');">Add SDP</button>
-        <br/><br/>
+        <label>Logs:</label>
+        <div id="data" style="font-family:monospace;padding:10px;border:1px solid gray; width: 600px;"></div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
         <script type="text/javascript">
+            const serverInput = document.getElementById("server");
             const messageInput = document.getElementById("message");
+            const dataOutput = document.getElementById("data");
             const sdpInput = {
                 offer: document.getElementById("sdp-offer"),
                 answer: document.getElementById("sdp-answer"),
@@ -41,10 +34,14 @@
             });
             let dataChannel;
             let isServer = false;
+            let serverId;
+            let messages = [];
 
             // Data channel callbacks
             const onMessage = message => {
                 console.log(`message:`, message.data);
+                messages.push(`peer: ${message.data}`);
+                dataOutput.innerHTML = messages.join("<br/>");
             };
 
             pc.onicecandidate = async event => {
@@ -52,6 +49,7 @@
                 if (!event.candidate && isServer) {
                     const offer = await pc.createOffer();
                     console.log(offer.sdp);
+                    socket.emit("sdp-offer", { id: serverId, offer });
                 }
             };
             pc.ondatachannel = event => {
@@ -71,12 +69,13 @@
             const createDataChannel = () => {
                 dataChannel = pc.createDataChannel("chat");
                 dataChannel.onmessage = onMessage;
-                isServer = true;
             };
 
             const send = async () => {
                 const message = messageInput.value;
                 dataChannel.send(message);
+                messages.push(`host: ${message}`);
+                dataOutput.innerHTML = messages.join("<br/>");
             };
 
             const addSdp = async (type) => {
@@ -91,6 +90,32 @@
                     console.log(`send the following answer:`);
                     console.log(await pc.localDescription.sdp);
                 }
+            };
+
+            socket.on("on-server-create", message => {
+                console.log(`server created!`, message);
+                serverInput.value = message;
+                serverId = message;
+            });
+            socket.on("on-server-connect", async ({ offer }) => {
+                console.log(`connected to server, offer:`, offer);
+                await pc.setRemoteDescription(offer);
+                await pc.setLocalDescription(await pc.createAnswer());
+                socket.emit("sdp-answer", { answer: await pc.localDescription, id: serverId });
+            });
+            socket.on("on-client-connect", async answer => {
+                console.log(`connecting to client...`);
+                await pc.setRemoteDescription(answer);
+            });
+
+            const createServer = () => {
+                isServer = true;
+                createDataChannel();
+                socket.emit("server-create");
+            };
+            const connectToServer = () => {
+                serverId = serverInput.value;
+                socket.emit("server-connect", serverInput.value);
             };
         </script>
     </body>
