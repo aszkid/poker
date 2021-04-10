@@ -2,10 +2,13 @@ Inspired by Uxn: https://wiki.xxiivv.com/site/uxn.html
 
 ## Developing
 
-Requirements: `docker`.
+Requirements: `docker`, `npm`.
 
-1. `docker build -t poker .`
-2. `docker run -p 5000:5000 -v $PWD:/poker poker`
+1. Boot up the signaling server: `cd server && npm install && npm start`.
+2. Open `http://localhost:3000` on the browser and click "Create server". Copy the server ID.
+3. Open `src/poker.c` and fill in the server ID in the `net_connect(...)` function call.
+4. `docker build -t poker .`
+5. `docker run -p 5000:5000 -v $PWD:/poker poker`
 
 ## Contributing
 
