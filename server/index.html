@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    </head>
+    <body>
+        <label for="server">Server ID:</label>
+        <input type="text" name="server" id="server">
+        <button>Connect</button>
+        <br/><br/>
+
+        <button onClick="createDataChannel();">Create data channel</button>
+        <br/><br/>
+
+        <label for="message">Message:</label><br/>
+        <textarea type="text" cols="80" rows="3" name="message" id="message"></textarea><br/>
+        <button onClick="send();">Send</button>
+        <br/><br/>
+
+        <label for="sdp-offer">SDP offer:</label><br/>
+        <textarea name="sdp-offer" id="sdp-offer" cols="80" rows="20"></textarea><br/>
+        <button onClick="addSdp('offer');">Add SDP</button>
+        <br/><br/>
+
+        <label for="sdp-answer">SDP answer:</label><br/>
+        <textarea name="sdp-answer" id="sdp-answer" cols="80" rows="20"></textarea><br/>
+        <button onClick="addSdp('answer');">Add SDP</button>
+        <br/><br/>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+        <script type="text/javascript">
+            const messageInput = document.getElementById("message");
+            const sdpInput = {
+                offer: document.getElementById("sdp-offer"),
+                answer: document.getElementById("sdp-answer"),
+            };
+            const socket = io();
+            const pc = new RTCPeerConnection({
+                iceServers: [{ "urls": "stun:stun.l.google.com:19302" }],
+            });
+            let dataChannel;
+            let isServer = false;
+
+            // Data channel callbacks
+            const onMessage = message => {
+                console.log(`message:`, message.data);
+            };
+
+            pc.onicecandidate = async event => {
+                // Done receiving ICE candidates, create offer
+                if (!event.candidate && isServer) {
+                    const offer = await pc.createOffer();
+                    console.log(offer.sdp);
+                }
+            };
+            pc.ondatachannel = event => {
+                // Remote peer creates a data channel
+                if (event.channel.label === "chat") {
+                    dataChannel = event.channel;
+                }
+                event.channel.onmessage = onMessage;
+            };
+            pc.onnegotiationneeded = async event => {
+                await pc.setLocalDescription(await pc.createOffer());
+            };
+            pc.onconnectionstatechange = event => {
+                console.log(pc.connectionState);
+            };
+
+            const createDataChannel = () => {
+                dataChannel = pc.createDataChannel("chat");
+                dataChannel.onmessage = onMessage;
+                isServer = true;
+            };
+
+            const send = async () => {
+                const message = messageInput.value;
+                dataChannel.send(message);
+            };
+
+            const addSdp = async (type) => {
+                // Set remote peer's description
+                const sdp = sdpInput[type].value;
+                const description = { type, sdp };
+                await pc.setRemoteDescription(description);
+
+                // If this is an offer, generate an answer
+                if (type === "offer") {
+                    await pc.setLocalDescription(await pc.createAnswer());
+                    console.log(`send the following answer:`);
+                    console.log(await pc.localDescription.sdp);
+                }
+            };
+        </script>
+    </body>
+</html>
